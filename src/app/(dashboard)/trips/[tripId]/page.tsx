@@ -21,19 +21,19 @@ export default function TripDetailPage() {
 
   useEffect(() => {
     async function load() {
-      if (!params.tripId) return;
+      if (!params?.tripId) return;
 
-      if (params.tripId === "demo") {
+      if (params?.tripId === "demo") {
         setItems(MOCK_ITINERARY);
         setBudget(MOCK_BUDGET);
         setLoading(false);
         return;
       }
 
-      const t = await getTrip(params.tripId);
+      const t = await getTrip(params?.tripId as string);
       if (t) {
         setTrip(t);
-        const itinerary = await getItinerary(params.tripId);
+        const itinerary = await getItinerary(params?.tripId as string);
         setItems(itinerary.length > 0 ? itinerary : MOCK_ITINERARY);
 
         const days = t.startDate && t.endDate
@@ -46,7 +46,7 @@ export default function TripDetailPage() {
       setLoading(false);
     }
     load();
-  }, [params.tripId]);
+  }, [params?.tripId]);
 
   if (loading) {
     return (

@@ -16,7 +16,7 @@ export default function GuestPlanPage() {
 
   useEffect(() => {
     async function load() {
-      if (!params.shortCode) return;
+      if (!params?.shortCode) return;
       const data = await getGuestPlan(params.shortCode);
       if (!data) {
         setExpired(true);
