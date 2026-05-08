@@ -1,10 +1,6 @@
 name: Deploy to Firebase Hosting
 
 on:
-  push:
-    branches:
-      - main       # production
-      - develop    # staging (preview channel)
   workflow_dispatch:
     inputs:
       environment:
