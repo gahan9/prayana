@@ -54,3 +54,6 @@ Thumbs.db
 # ──────────────────────────────────────────────
 *.tsbuildinfo
 next-env.d.ts
+.cursor/fullstack-gcp-engineer/gcp-patterns.md
+.cursor/fullstack-gcp-engineer/security-checklist.md
+.cursor/fullstack-gcp-engineer/SKILL.md

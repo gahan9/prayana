@@ -37,7 +37,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com",
               "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com",
-              "frame-src https://accounts.google.com",
+              "frame-src https://accounts.google.com https://www.google.com",
             ].join("; "),
           },
         ],
