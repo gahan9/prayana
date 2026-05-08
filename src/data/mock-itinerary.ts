@@ -1,0 +1,112 @@
+import type { ItineraryItem, BudgetBreakdown } from "@/types";
+
+/**
+ * Mock itinerary response matching the schema Gemini will return.
+ * Used in Sprint 1 before live API is wired.
+ */
+export const MOCK_ITINERARY: Partial<ItineraryItem>[] = [
+  {
+    day: 1,
+    order: 1,
+    title: "Arrive at Jaipur Airport",
+    description: "Arrive and transfer to hotel. Rest and freshen up.",
+    locationName: "Jaipur International Airport",
+    category: "transport",
+    duration: 60,
+    cost: 500,
+  },
+  {
+    day: 1,
+    order: 2,
+    title: "Lunch at Laxmi Mishthan Bhandar",
+    description: "Must-try: Dal Baati Churma and Ghewar. Iconic Rajasthani restaurant.",
+    locationName: "LMB, Johari Bazaar, Jaipur",
+    category: "food",
+    duration: 90,
+    cost: 800,
+  },
+  {
+    day: 1,
+    order: 3,
+    title: "Hawa Mahal & Jantar Mantar",
+    description: "Visit the Palace of Winds and the astronomical instruments. Best photos at sunset.",
+    locationName: "Hawa Mahal, Jaipur",
+    category: "sightseeing",
+    duration: 180,
+    cost: 200,
+  },
+  {
+    day: 2,
+    order: 1,
+    title: "Amber Fort & Nahargarh Trek",
+    description: "Morning visit to Amber Fort, then trek to Nahargarh for panoramic views.",
+    locationName: "Amber Fort, Jaipur",
+    category: "activity",
+    duration: 300,
+    cost: 1500,
+  },
+  {
+    day: 2,
+    order: 2,
+    title: "Shopping at Johari Bazaar",
+    description: "Famous for gemstones, bangles, and traditional Rajasthani textiles. Great for souvenirs.",
+    locationName: "Johari Bazaar, Jaipur",
+    category: "shopping",
+    duration: 120,
+    cost: 3000,
+  },
+  {
+    day: 2,
+    order: 3,
+    title: "Dinner at Chokhi Dhani",
+    description: "Cultural village experience with folk dances, puppet shows, and authentic Rajasthani thali.",
+    locationName: "Chokhi Dhani, Jaipur",
+    category: "food",
+    duration: 180,
+    cost: 1200,
+  },
+  {
+    day: 3,
+    order: 1,
+    title: "City Palace & Albert Hall Museum",
+    description: "Royal heritage tour. Crowd level: medium on weekdays.",
+    locationName: "City Palace, Jaipur",
+    category: "sightseeing",
+    duration: 240,
+    cost: 500,
+  },
+  {
+    day: 3,
+    order: 2,
+    title: "Blue Pottery Workshop",
+    description: "Hands-on souvenir-making experience. Create your own blue pottery piece to take home.",
+    locationName: "Kripal Kumbh, Jaipur",
+    category: "activity",
+    duration: 120,
+    cost: 600,
+  },
+  {
+    day: 3,
+    order: 3,
+    title: "Departure",
+    description: "Check out and transfer to airport.",
+    locationName: "Jaipur International Airport",
+    category: "transport",
+    duration: 60,
+    cost: 500,
+  },
+];
+
+export const MOCK_BUDGET: BudgetBreakdown = {
+  totalBudget: 15000,
+  currency: "INR",
+  categories: {
+    accommodation: { planned: 4500, actual: 0 },
+    food: { planned: 3000, actual: 0 },
+    transport: { planned: 2000, actual: 0 },
+    activities: { planned: 3000, actual: 0 },
+    shopping: { planned: 1500, actual: 0 },
+    contingency: { planned: 1000, actual: 0 },
+  },
+  dailyAverage: 5000,
+};

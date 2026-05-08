@@ -84,6 +84,25 @@ service cloud.firestore {
           && isValidEmail()
           && isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
       }
+
+      // ── Trip expenses ────────────────────────────────────────────────────
+      match /expenses/{expenseId} {
+        allow read, write: if isAuthenticated()
+          && isValidEmail()
+          && isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
+      }
+
+      // ── AI conversation messages ─────────────────────────────────────────
+      match /conversations/{messageId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
+
+        allow create: if isAuthenticated()
+          && isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId)
+          && hasRequiredFields(['role', 'content', 'createdAt'])
+          && incomingData().role in ['user', 'assistant', 'system'];
+
+        allow delete: if isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
+      }
     }
 
     // ── Destinations ──────────────────────────────────────────────────────────
@@ -107,6 +126,15 @@ service cloud.firestore {
       allow update: if isOwner(existingData().authorId)
         && incomingData().authorId == existingData().authorId; // immutable
       allow delete: if isOwner(existingData().authorId);
+    }
+
+    // ── Guest Plans ──────────────────────────────────────────────────────────
+    // World-readable by shortCode so shareable links work without auth.
+    // Creation allowed from client (guest flow); updates and deletes blocked.
+    match /guestPlans/{shortCode} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
     }
 
     // ── Default deny ─────────────────────────────────────────────────────────

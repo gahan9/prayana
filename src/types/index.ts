@@ -96,6 +96,111 @@ export interface GeoPoint {
   longitude: number;
 }
 
+// ── AI Chat ──────────────────────────────────────────────────────────────────
+
+export interface AIChatMessage {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  metadata?: {
+    suggestedItinerary?: Partial<ItineraryItem>[];
+    suggestedBudget?: BudgetBreakdown;
+  };
+  createdAt: Timestamp;
+}
+
+// ── Wizard ───────────────────────────────────────────────────────────────────
+
+export type InterestCategory =
+  | "food"
+  | "culture"
+  | "thrill"
+  | "shopping"
+  | "souvenirs"
+  | "memory"
+  | "nature"
+  | "nightlife";
+
+export type TransportMode = "flight" | "train" | "bus" | "car" | "walk";
+
+export interface WizardInput {
+  destinations: string[];
+  dateRange: { start: string; end: string };
+  budget: {
+    amount: number;
+    currency: string;
+    flexibility: "strict" | "moderate" | "flexible";
+  };
+  travelers: number;
+  interests: InterestCategory[];
+  transportPreference: TransportMode[];
+}
+
+// ── Budget ───────────────────────────────────────────────────────────────────
+
+export type BudgetCategory =
+  | "accommodation"
+  | "food"
+  | "transport"
+  | "activities"
+  | "shopping"
+  | "contingency";
+
+export interface BudgetBreakdown {
+  totalBudget: number;
+  currency: string;
+  categories: Record<BudgetCategory, { planned: number; actual: number }>;
+  dailyAverage: number;
+}
+
+export interface Expense {
+  id: string;
+  tripId: string;
+  category: BudgetCategory;
+  amount: number;
+  currency: string;
+  description: string;
+  date: Timestamp;
+  createdAt: Timestamp;
+}
+
+// ── Guest Plan ───────────────────────────────────────────────────────────────
+
+export interface GuestPlan {
+  shortCode: string;
+  plan: Partial<ItineraryItem>[];
+  query?: string;
+  location?: GeoPoint;
+  createdAt: Timestamp;
+  expiresAt: Timestamp;
+  viewCount: number;
+}
+
+// ── Crowd Estimate ───────────────────────────────────────────────────────────
+
+export type CrowdLevel = "low" | "medium" | "high";
+
+// ── Deals ────────────────────────────────────────────────────────────────────
+
+export type DealCategory = "flight" | "hotel" | "package" | "activity" | "bank_offer";
+
+export interface Deal {
+  id: string;
+  title: string;
+  description: string;
+  category: DealCategory;
+  destination?: string;
+  originalPrice?: number;
+  discountedPrice?: number;
+  discountPercent?: number;
+  currency: string;
+  provider: string;
+  url?: string;
+  validFrom: string;
+  validUntil: string;
+  tags?: string[];
+}
+
 // ── Health check ──────────────────────────────────────────────────────────────
 
 export interface HealthStatus {
