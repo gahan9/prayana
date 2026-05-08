@@ -12,6 +12,7 @@ interface MapEmbedProps {
 export function MapEmbed({ query, className = "" }: MapEmbedProps) {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_EMBED_API_KEY;
 
+
   if (!apiKey) {
     return (
       <div
