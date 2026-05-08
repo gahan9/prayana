@@ -20,9 +20,11 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy (${{ github.ref_name }})
+    name: Deploy
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    env:
+      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref_name == 'main' && 'production' || 'staging') }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref_name == 'main' && 'production' || 'staging') }}
     permissions:
       contents: read
       id-token: write  # required for OIDC / Workload Identity
@@ -60,7 +62,7 @@ jobs:
           PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
 
       - name: Deploy to Firebase Hosting (production)
-        if: github.ref_name == 'main'
+        if: env.DEPLOY_ENV == 'production'
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
@@ -69,7 +71,7 @@ jobs:
           PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
 
       - name: Deploy to Firebase Hosting (staging preview)
-        if: github.ref_name != 'main'
+        if: env.DEPLOY_ENV != 'production'
         uses: w9jds/firebase-action@master
         with:
           args: hosting:channel:deploy staging --expires 7d
@@ -84,5 +86,6 @@ jobs:
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | \`${{ env.DEPLOY_ENV }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
