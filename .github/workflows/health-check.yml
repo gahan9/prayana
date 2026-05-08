@@ -14,10 +14,17 @@ jobs:
   health-check:
     name: Backend API Connectors – ${{ matrix.environment.name }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     strategy:
       fail-fast: false
       matrix:
         environment:
+          # URL precedence:
+          # 1) BACKEND_*_HEALTH_URL repository variable
+          # 2) NEXT_PUBLIC_*_APP_URL repository variable
+          # 3) hardcoded default URL
           - name: Production
             url: ${{ vars.BACKEND_PRODUCTION_HEALTH_URL || vars.NEXT_PUBLIC_APP_URL || 'https://prayana-app.web.app' }}
           - name: Staging
@@ -34,8 +41,6 @@ jobs:
             "${{ matrix.environment.url }}/api/health")
 
           echo "http_status=$STATUS" >> "$GITHUB_OUTPUT"
-          echo "body=$(cat /tmp/health.json)" >> "$GITHUB_OUTPUT"
-
           if [ "$STATUS" != "200" ]; then
             echo "❌ Health check failed for ${{ matrix.environment.name }} (HTTP $STATUS)"
             exit 1
@@ -47,8 +52,21 @@ jobs:
       - name: Validate response schema
         if: steps.health.outputs.http_status == '200'
         run: |
-          BODY='${{ steps.health.outputs.body }}'
-          echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('status') == 'ok', f\"invalid status: {d.get('status')}\"; services=d.get('services', {}); assert services.get('firestore') in ('ok','error'), 'missing firestore connector'; assert services.get('auth') in ('ok','error'), 'missing auth connector'; assert services.get('storage') in ('ok','error'), 'missing storage connector'; print('✅ Response schema valid with connectors')"
+          python3 - <<'PY'
+          import json
+
+          with open("/tmp/health.json", "r", encoding="utf-8") as stream:
+              payload = json.load(stream)
+
+          assert payload.get("status") == "ok", f"invalid status: {payload.get('status')}"
+
+          services = payload.get("services", {})
+          assert services.get("firestore") == "ok", "firestore connector status must be 'ok'"
+          assert services.get("auth") == "ok", "auth connector status must be 'ok'"
+          assert services.get("storage") == "ok", "storage connector status must be 'ok'"
+
+          print("✅ Response schema valid with connectors")
+          PY
 
       - name: Create GitHub Issue on failure
         if: failure()
