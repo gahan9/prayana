@@ -2,9 +2,10 @@
 
 Travel Planning & Experience -- a Google-services-only PWA.
 
-[![Frontend Sanity](https://github.com/gahan9/prayana/actions/workflows/frontend-sanity.yml/badge.svg)](https://github.com/gahan9/prayana/actions/workflows/frontend-sanity.yml)
-[![Backend API Connectors](https://github.com/gahan9/prayana/actions/workflows/health-check.yml/badge.svg)](https://github.com/gahan9/prayana/actions/workflows/health-check.yml)
-[![Deploy to Firebase Hosting](https://github.com/gahan9/prayana/actions/workflows/deploy.yml/badge.svg)](https://github.com/gahan9/prayana/actions/workflows/deploy.yml)
+[![CI](https://github.com/gahan9/prayana/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gahan9/prayana/actions/workflows/ci.yml)
+[![Security Scan](https://github.com/gahan9/prayana/actions/workflows/security-scan.yml/badge.svg?branch=main)](https://github.com/gahan9/prayana/actions/workflows/security-scan.yml)
+[![Health Check](https://github.com/gahan9/prayana/actions/workflows/health-check.yml/badge.svg)](https://github.com/gahan9/prayana/actions/workflows/health-check.yml)
+[![Deploy](https://github.com/gahan9/prayana/actions/workflows/deploy.yml/badge.svg)](https://github.com/gahan9/prayana/actions/workflows/deploy.yml)
 
 ## Quick Start
 
