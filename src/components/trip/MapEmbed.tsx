@@ -25,48 +25,39 @@ export function MapEmbed({ query, className = "" }: MapEmbedProps) {
     const loader = new Loader({
       apiKey,
       version: "weekly",
-      libraries: ["places"],
     });
 
-    loader.load().then(async (google) => {
-      if (!mapRef.current) return;
+    (async () => {
+      try {
+        const { Map } = (await loader.importLibrary("maps")) as google.maps.MapsLibrary;
+        const { Geocoder } = (await loader.importLibrary("geocoding")) as google.maps.GeocodingLibrary;
+        const { AdvancedMarkerElement } = (await loader.importLibrary("marker")) as google.maps.MarkerLibrary;
 
-      const { Map } = (await google.maps.importLibrary("maps")) as google.maps.MapsLibrary;
-      const { Geocoder } = (await google.maps.importLibrary("geocoding")) as google.maps.GeocodingLibrary;
-      const { AdvancedMarkerElement } = (await google.maps.importLibrary("marker")) as google.maps.MarkerLibrary;
+        if (!mapRef.current) return;
 
-      const geocoder = new Geocoder();
-      
-      geocoder.geocode({ address: query }, (results, status) => {
-        if (status === "OK" && results?.[0]?.geometry?.location) {
-          const map = new Map(mapRef.current!, {
-            center: results[0].geometry.location,
-            zoom: 12,
-            mapId: MAP_ID,
-            disableDefaultUI: true,
-            zoomControl: true,
-            styles: [
-              {
-                featureType: "all",
-                elementType: "labels.text.fill",
-                stylers: [{ color: "#616161" }],
-              },
-              {
-                featureType: "water",
-                elementType: "geometry",
-                stylers: [{ color: "#e9e9e9" }],
-              },
-            ],
-          });
+        const geocoder = new Geocoder();
+        
+        geocoder.geocode({ address: query }, (results, status) => {
+          if (status === "OK" && results?.[0]?.geometry?.location) {
+            const map = new Map(mapRef.current!, {
+              center: results[0].geometry.location,
+              zoom: 12,
+              mapId: MAP_ID,
+              disableDefaultUI: true,
+              zoomControl: true,
+            });
 
-          new AdvancedMarkerElement({
-            map,
-            position: results[0].geometry.location,
-            title: query,
-          });
-        }
-      });
-    });
+            new AdvancedMarkerElement({
+              map,
+              position: results[0].geometry.location,
+              title: query,
+            });
+          }
+        });
+      } catch (error) {
+        console.error("Maps load error:", error);
+      }
+    })();
   }, [apiKey, query]);
 
   if (!apiKey) {
