@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # npm / Node.js
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 10
+    groups:
+      production-deps:
+        patterns: ["*"]
+        exclude-patterns: ["@types/*", "eslint*", "jest*", "typescript"]
+        update-types: ["minor", "patch"]
+      dev-deps:
+        patterns: ["@types/*", "eslint*", "jest*", "typescript"]
+    ignore:
+      # Pin major versions manually
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "firebase"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5

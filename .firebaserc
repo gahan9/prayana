@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "prayana-app",
+    "production": "prayana-app",
+    "staging": "prayana-app-staging"
+  },
+  "targets": {}
+}

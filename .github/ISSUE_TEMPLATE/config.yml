@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/gahan9/prayana/discussions
+    about: Ask questions and discuss ideas here.
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/gahan9/prayana/security/advisories/new
+    about: Please report security vulnerabilities privately.
