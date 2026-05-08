@@ -10,17 +10,21 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  type CollectionReference,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Trip, ItineraryItem } from "@/types";
 
-const tripsCol = collection(db, "trips");
+function getTripsCol(): CollectionReference {
+  if (!db) throw new Error("Firestore not initialized");
+  return collection(db, "trips");
+}
 
 export async function createTrip(
   ownerId: string,
   data: Omit<Trip, "id" | "ownerId" | "createdAt">,
 ): Promise<string> {
-  const ref = await addDoc(tripsCol, {
+  const ref = await addDoc(getTripsCol(), {
     ...data,
     ownerId,
     createdAt: serverTimestamp(),
@@ -29,18 +33,20 @@ export async function createTrip(
 }
 
 export async function getTrip(tripId: string): Promise<Trip | null> {
+  if (!db) return null;
   const snap = await getDoc(doc(db, "trips", tripId));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() } as Trip;
 }
 
 export async function getUserTrips(userId: string): Promise<Trip[]> {
-  const q = query(tripsCol, where("ownerId", "==", userId), orderBy("createdAt", "desc"));
+  const q = query(getTripsCol(), where("ownerId", "==", userId), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Trip);
 }
 
 export async function updateTrip(tripId: string, data: Partial<Trip>): Promise<void> {
+  if (!db) return;
   await updateDoc(doc(db, "trips", tripId), {
     ...data,
     updatedAt: serverTimestamp(),
@@ -48,10 +54,12 @@ export async function updateTrip(tripId: string, data: Partial<Trip>): Promise<v
 }
 
 export async function deleteTrip(tripId: string): Promise<void> {
+  if (!db) return;
   await deleteDoc(doc(db, "trips", tripId));
 }
 
 export async function getItinerary(tripId: string): Promise<ItineraryItem[]> {
+  if (!db) return [];
   const col = collection(db, "trips", tripId, "itinerary");
   const q = query(col, orderBy("day"), orderBy("order"));
   const snap = await getDocs(q);
@@ -62,6 +70,7 @@ export async function addItineraryItem(
   tripId: string,
   item: Omit<ItineraryItem, "id" | "createdAt">,
 ): Promise<string> {
+  if (!db) throw new Error("Firestore not initialized");
   const col = collection(db, "trips", tripId, "itinerary");
   const ref = await addDoc(col, { ...item, createdAt: serverTimestamp() });
   return ref.id;

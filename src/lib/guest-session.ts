@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, isConfigured } from "@/lib/firebase";
 import type { GuestPlan, ItineraryItem, GeoPoint } from "@/types";
 
 const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -34,11 +34,13 @@ export async function saveGuestPlan(
     viewCount: 0,
   };
 
+  if (!db) throw new Error("Firestore not initialized");
   await setDoc(doc(db, "guestPlans", shortCode), guestPlan);
   return shortCode;
 }
 
 export async function getGuestPlan(shortCode: string): Promise<GuestPlan | null> {
+  if (!db || !isConfigured) return null;
   const snap = await getDoc(doc(db, "guestPlans", shortCode));
   if (!snap.exists()) return null;
 

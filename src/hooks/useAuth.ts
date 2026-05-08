@@ -9,7 +9,7 @@ import {
   type User,
 } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, isConfigured } from "@/lib/firebase";
 import type { UserProfile } from "@/types";
 
 interface AuthState {
@@ -34,9 +34,13 @@ export function useAuthProvider(): AuthState {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth || !isConfigured) {
+      setLoading(false);
+      return;
+    }
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      if (firebaseUser) {
+      if (firebaseUser && db) {
         const ref = doc(db, "users", firebaseUser.uid);
         const snap = await getDoc(ref);
         if (snap.exists()) {
@@ -62,11 +66,13 @@ export function useAuthProvider(): AuthState {
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }, []);
 
   const signOut = useCallback(async () => {
+    if (!auth) return;
     await firebaseSignOut(auth);
     setProfile(null);
   }, []);

@@ -44,7 +44,7 @@ export default function WizardPage() {
       <div className="max-w-2xl mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Trip Wizard</h1>
         <p className="text-gray-500 mb-8">
-          Tell us about your dream trip and we'll generate a personalised itinerary.
+          Tell us about your dream trip and we&apos;ll generate a personalised itinerary.
         </p>
         <Card>
           <WizardForm
