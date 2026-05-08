@@ -34,9 +34,9 @@ service firebase.storage {
     // ── Trip media ────────────────────────────────────────────────────────────
     // Path: /trips/{tripId}/media/{fileName}
     match /trips/{tripId}/media/{fileName} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && isValidImage();
-      allow delete: if isAuthenticated();
+      allow read: if isAuthenticated(); // Could be more restrictive, but okay for now
+      allow write, delete: if isAuthenticated() 
+        && firestore.get(/databases/(default)/documents/trips/$(tripId)).data.ownerId == request.auth.uid;
     }
 
     // ── Default deny ─────────────────────────────────────────────────────────
