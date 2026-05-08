@@ -26,7 +26,7 @@ export default function GuestPlanPage() {
       setLoading(false);
     }
     load();
-  }, [params.shortCode]);
+  }, [params?.shortCode]);
 
   if (loading) {
     return (
