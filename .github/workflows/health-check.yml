@@ -1,6 +1,10 @@
-name: Health Check
+name: Backend API Connectors
 
 on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
   schedule:
     # Run every 15 minutes
     - cron: "*/15 * * * *"
@@ -8,16 +12,16 @@ on:
 
 jobs:
   health-check:
-    name: Health Check – ${{ matrix.environment.name }}
+    name: Backend API Connectors – ${{ matrix.environment.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         environment:
           - name: Production
-            url: ${{ vars.PRODUCTION_URL || 'https://prayana-app.web.app' }}
+            url: ${{ vars.BACKEND_PRODUCTION_HEALTH_URL || vars.NEXT_PUBLIC_APP_URL || 'https://prayana-app.web.app' }}
           - name: Staging
-            url: ${{ vars.STAGING_URL || 'https://prayana-app--staging.web.app' }}
+            url: ${{ vars.BACKEND_STAGING_HEALTH_URL || vars.NEXT_PUBLIC_STAGING_APP_URL || 'https://prayana-app--staging.web.app' }}
 
     steps:
       - name: Ping /api/health
@@ -44,12 +48,7 @@ jobs:
         if: steps.health.outputs.http_status == '200'
         run: |
           BODY='${{ steps.health.outputs.body }}'
-          STATUS=$(echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',''))")
-          if [ "$STATUS" != "ok" ]; then
-            echo "❌ Health status is not 'ok': $STATUS"
-            exit 1
-          fi
-          echo "✅ Response schema valid"
+          echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('status') == 'ok', f\"invalid status: {d.get('status')}\"; services=d.get('services', {}); assert services.get('firestore') in ('ok','error'), 'missing firestore connector'; assert services.get('auth') in ('ok','error'), 'missing auth connector'; assert services.get('storage') in ('ok','error'), 'missing storage connector'; print('✅ Response schema valid with connectors')"
 
       - name: Create GitHub Issue on failure
         if: failure()
