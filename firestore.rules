@@ -33,10 +33,6 @@ service cloud.firestore {
       return incomingData().keys().hasAll(fields);
     }
 
-    function isValidTimestamp(field) {
-      return incomingData()[field] is timestamp;
-    }
-
     // ── Users ─────────────────────────────────────────────────────────────────
     // Each user document is readable only by its owner.
     // Only the owner can write their own profile.

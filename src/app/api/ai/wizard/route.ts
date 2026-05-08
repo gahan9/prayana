@@ -1,15 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { WizardInput } from "@/types";
-import { generateContent, buildWizardPrompt } from "@/lib/gemini";
+import { buildWizardPrompt } from "@/lib/gemini";
+import { generateVertexContent } from "@/lib/vertex";
 import { MOCK_ITINERARY, MOCK_BUDGET } from "@/data/mock-itinerary";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * POST /api/ai/wizard
  *
- * Generates a complete itinerary from wizard inputs using Gemini API.
- * Falls back to mock data when API key is missing or on parse failure.
+ * Generates a complete itinerary from wizard inputs using Google Cloud Vertex AI.
+ * Falls back to mock data when service is unavailable or on parse failure.
  */
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as WizardInput;
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   const prompt = buildWizardPrompt(body);
-  const result = await generateContent(prompt);
+  const result = await generateVertexContent(prompt);
 
   if (!result) {
     return NextResponse.json({
@@ -32,7 +33,8 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const text = result.response.text();
+  const response = await result.response;
+  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
   try {
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();

@@ -21,6 +21,7 @@ import {
   type FirebaseStorage,
 } from "firebase/storage";
 import { getAnalytics, type Analytics, isSupported } from "firebase/analytics";
+import { getPerformance, type FirebasePerformance } from "firebase/performance";
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -69,6 +70,15 @@ export async function getFirebaseAnalytics(): Promise<Analytics | null> {
   const supported = await isSupported();
   if (!supported) return null;
   return getAnalytics(app);
+}
+
+/**
+ * Performance Monitoring initialization.
+ * Only available in the browser.
+ */
+export function getFirebasePerformance(): FirebasePerformance | null {
+  if (typeof window === "undefined" || !app) return null;
+  return getPerformance(app);
 }
 
 // ── Local emulator wiring (development only) ──────────────────────────────────

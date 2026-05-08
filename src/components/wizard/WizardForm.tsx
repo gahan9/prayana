@@ -142,6 +142,7 @@ export function WizardForm({ onSubmit, loading, result }: WizardFormProps) {
               key={f}
               type="button"
               onClick={() => setFlexibility(f)}
+              aria-pressed={flexibility === f}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 flexibility === f
                   ? "bg-brand-600 text-white"
@@ -299,13 +300,14 @@ export function WizardForm({ onSubmit, loading, result }: WizardFormProps) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-6">
-        <div className="flex gap-1">
+        <div className="flex gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={2} aria-valuenow={step}>
           {[0, 1, 2].map((s) => (
             <div
               key={s}
               className={`h-1 flex-1 rounded-full transition-colors ${
                 s <= step ? "bg-brand-600" : "bg-gray-200"
               }`}
+              aria-current={s === step ? "step" : undefined}
             />
           ))}
         </div>

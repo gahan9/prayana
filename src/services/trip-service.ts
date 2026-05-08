@@ -20,6 +20,13 @@ function getTripsCol(): CollectionReference {
   return collection(db, "trips");
 }
 
+/**
+ * Persists a new trip to Firestore.
+ * 
+ * @param ownerId - The UID of the user who owns this trip.
+ * @param data - The trip details excluding auto-generated fields.
+ * @returns The ID of the created trip document.
+ */
 export async function createTrip(
   ownerId: string,
   data: Omit<Trip, "id" | "ownerId" | "createdAt">,
@@ -32,6 +39,12 @@ export async function createTrip(
   return ref.id;
 }
 
+/**
+ * Retrieves a single trip by its document ID.
+ * 
+ * @param tripId - The document ID of the trip.
+ * @returns The trip data or null if not found.
+ */
 export async function getTrip(tripId: string): Promise<Trip | null> {
   if (!db) return null;
   const snap = await getDoc(doc(db, "trips", tripId));

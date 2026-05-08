@@ -1,5 +1,9 @@
 import type { BudgetBreakdown, BudgetCategory, ItineraryItem } from "@/types";
 
+/**
+ * Default budget allocation percentages across different travel categories.
+ * Sums to 1.0 (100%).
+ */
 const DEFAULT_ALLOCATION: Record<BudgetCategory, number> = {
   accommodation: 0.30,
   food: 0.20,
@@ -12,6 +16,11 @@ const DEFAULT_ALLOCATION: Record<BudgetCategory, number> = {
 /**
  * Generates a budget breakdown from total budget and number of days.
  * Uses default allocation percentages.
+ * 
+ * @param totalBudget - The total amount allocated for the trip.
+ * @param currency - The currency code (e.g., "INR", "USD").
+ * @param days - Total number of days for the trip.
+ * @returns A structured BudgetBreakdown object.
  */
 export function allocateBudget(
   totalBudget: number,

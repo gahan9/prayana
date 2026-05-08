@@ -51,7 +51,7 @@ npm run firebase:emulators
 
 ## Tech Stack
 
-Next.js 14, React 18, TypeScript, Tailwind CSS, Firebase (Auth, Firestore, Storage, Hosting), Gemini API (AI Studio free tier), Maps Embed API.
+Next.js 14, React 18, TypeScript, Tailwind CSS, Firebase (Auth, Firestore, Storage, Hosting, Performance, Analytics), Vertex AI (Google Cloud), BigQuery (Analytics), Cloud Functions Gen 2, Maps Embed API.
 
 ## Architecture
 
