@@ -1,8 +1,9 @@
 {
   "projects": {
-    "default": "prayana-app",
-    "production": "prayana-app",
-    "staging": "prayana-app-staging"
+    "default": "prayana-app-7bdf",
+    "production": "prayana-app-7bdf",
+    "staging": "prayana-app-7bdf"
   },
-  "targets": {}
+  "targets": {},
+  "etags": {}
 }
