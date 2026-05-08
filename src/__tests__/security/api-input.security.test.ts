@@ -3,8 +3,11 @@
  */
 
 jest.mock("@/lib/gemini", () => ({
-  generateContent: jest.fn().mockResolvedValue(null),
   buildWizardPrompt: jest.fn().mockReturnValue("mock prompt"),
+}));
+
+jest.mock("@/lib/vertex", () => ({
+  generateVertexContent: jest.fn().mockResolvedValue(null),
 }));
 
 import { POST as wizardPost } from "@/app/api/ai/wizard/route";

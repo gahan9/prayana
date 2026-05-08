@@ -2,9 +2,24 @@
  * @jest-environment node
  */
 
+jest.mock("firebase/firestore", () => ({
+  collection: jest.fn(() => ({ id: "mock-col" })),
+  doc: jest.fn(() => ({ id: "mock-doc" })),
+  addDoc: jest.fn(),
+  getDoc: jest.fn(),
+  getDocs: jest.fn(),
+  query: jest.fn(),
+  where: jest.fn(),
+  orderBy: jest.fn(),
+  serverTimestamp: jest.fn(() => "timestamp"),
+}));
+
 jest.mock("@/lib/gemini", () => ({
-  generateContent: jest.fn().mockResolvedValue(null),
   buildWizardPrompt: jest.fn().mockReturnValue("mock prompt"),
+}));
+
+jest.mock("@/lib/vertex", () => ({
+  generateVertexContent: jest.fn().mockResolvedValue(null),
 }));
 
 import { POST } from "@/app/api/ai/wizard/route";
