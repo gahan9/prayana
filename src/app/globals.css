@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS custom properties ── */
+:root {
+  --font-inter: "Inter", system-ui, sans-serif;
+}
+
+/* ── Base resets ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-inter);
+  line-height: 1.6;
+}
+
+/* ── Focus ring – accessible & brand-coloured ── */
+:focus-visible {
+  outline: 2px solid theme("colors.brand.500");
+  outline-offset: 2px;
+}
+
+/* ── Skip to content – accessibility ── */
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50;
+  @apply bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-semibold;
+}

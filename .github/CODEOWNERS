@@ -1,0 +1,12 @@
+# All files
+* @gahan9
+
+# Firebase security rules
+firestore.rules @gahan9
+storage.rules @gahan9
+
+# CI/CD workflows
+.github/workflows/ @gahan9
+
+# Core app
+src/ @gahan9

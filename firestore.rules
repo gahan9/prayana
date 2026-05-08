@@ -1,0 +1,117 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isNotTooLarge(field, maxSize) {
+      return field.size() <= maxSize;
+    }
+
+    function incomingData() {
+      return request.resource.data;
+    }
+
+    function existingData() {
+      return resource.data;
+    }
+
+    function hasRequiredFields(fields) {
+      return incomingData().keys().hasAll(fields);
+    }
+
+    function isValidTimestamp(field) {
+      return incomingData()[field] is timestamp;
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
+    // Each user document is readable only by its owner.
+    // Only the owner can write their own profile.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && hasRequiredFields(['uid', 'email', 'displayName', 'createdAt'])
+        && incomingData().uid == userId
+        && isNotTooLarge(incomingData().displayName, 100);
+      allow update: if isOwner(userId)
+        && isNotTooLarge(incomingData().displayName, 100)
+        && incomingData().uid == existingData().uid   // immutable
+        && incomingData().email == existingData().email; // immutable
+      allow delete: if isOwner(userId);
+    }
+
+    // ── Trips ─────────────────────────────────────────────────────────────────
+    // Public trips can be read by anyone.
+    // Only authenticated, email-verified owners can write their own trips.
+    match /trips/{tripId} {
+      allow read: if resource.data.visibility == 'public'
+        || isOwner(resource.data.ownerId);
+
+      allow create: if isAuthenticated()
+        && isValidEmail()
+        && hasRequiredFields(['title', 'ownerId', 'visibility', 'createdAt'])
+        && incomingData().ownerId == request.auth.uid
+        && isNotTooLarge(incomingData().title, 200)
+        && incomingData().visibility in ['public', 'private', 'shared'];
+
+      allow update: if isOwner(existingData().ownerId)
+        && isValidEmail()
+        && incomingData().ownerId == existingData().ownerId // immutable
+        && isNotTooLarge(incomingData().title, 200)
+        && incomingData().visibility in ['public', 'private', 'shared'];
+
+      allow delete: if isOwner(existingData().ownerId);
+
+      // ── Trip itinerary items ───────────────────────────────────────────────
+      match /itinerary/{itemId} {
+        allow read: if get(/databases/$(database)/documents/trips/$(tripId)).data.visibility == 'public'
+          || isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
+
+        allow write: if isAuthenticated()
+          && isValidEmail()
+          && isOwner(get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId);
+      }
+    }
+
+    // ── Destinations ──────────────────────────────────────────────────────────
+    // Read-only public catalogue; only admins can write (managed via Admin SDK).
+    match /destinations/{destinationId} {
+      allow read: if true;
+      allow write: if false; // managed server-side only
+    }
+
+    // ── Reviews ───────────────────────────────────────────────────────────────
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated()
+        && isValidEmail()
+        && hasRequiredFields(['authorId', 'destinationId', 'rating', 'createdAt'])
+        && incomingData().authorId == request.auth.uid
+        && incomingData().rating is int
+        && incomingData().rating >= 1
+        && incomingData().rating <= 5
+        && isNotTooLarge(incomingData().comment, 2000);
+      allow update: if isOwner(existingData().authorId)
+        && incomingData().authorId == existingData().authorId; // immutable
+      allow delete: if isOwner(existingData().authorId);
+    }
+
+    // ── Default deny ─────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
