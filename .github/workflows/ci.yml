@@ -61,7 +61,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -110,7 +110,7 @@ jobs:
         run: npm run build
 
       - name: Upload build artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nextjs-build
           path: |
